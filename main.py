@@ -1,15 +1,19 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI
 import psycopg2
+
+load_dotenv()
 
 app = FastAPI()
 
 def get_connection():
     return psycopg2.connect(
-        host="localhost",
-        port=5432,
-        database="postgres",
-        user="postgres",
-        password="secreto123"
+        host=os.getenv("DB_HOST", "localhost"),
+        port=os.getenv("DB_PORT", "5432"),
+        database=os.getenv("DB_NAME", "postgres"),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("POSTGRES_PASSWORD")
     )
 
 @app.get("/pharmacies/nearby")
