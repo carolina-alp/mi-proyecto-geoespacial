@@ -31,3 +31,19 @@ def pharmacies_nearby(lat: float, lon: float, radius_meters: int = 1000):
     cur.close()
     conn.close()
     return [{"name": r[0], "distance_meters": r[1]} for r in results]
+
+@app.get("/zones/locate")
+def locate_zone(lat: float, lon: float):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT name
+        FROM zones
+        WHERE ST_Contains(boundary::geometry, ST_SetSRID(ST_MakePoint(%s, %s), 4326));
+    """, (lon, lat))
+    result = cur.fetchone()
+    cur.close()
+    conn.close()
+    if result:
+        return {"zone": result[0]}
+    return {"zone": None}

@@ -46,6 +46,16 @@ jobs:
           ('South Pharmacy', ST_MakePoint(-66.1490, -17.4050));
           "
 
+          CREATE TABLE zones (
+              id SERIAL PRIMARY KEY,
+              name TEXT,
+              boundary GEOGRAPHY(Polygon, 4326)
+          );
+          INSERT INTO zones (name, boundary) VALUES
+          ('Zone North', ST_GeogFromText('POLYGON((-66.17 -17.38, -66.14 -17.38, -66.14 -17.40, -66.17 -17.40, -66.17 -17.38))')),
+          ('Zone South', ST_GeogFromText('POLYGON((-66.17 -17.40, -66.14 -17.40, -66.14 -17.42, -66.17 -17.42, -66.17 -17.40))'));
+          "
+
       - name: Run tests
         env:
           POSTGRES_PASSWORD: secreto123
