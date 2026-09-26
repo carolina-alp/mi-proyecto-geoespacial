@@ -1,3 +1,5 @@
+![Tests](https://github.com/TU_USUARIO/mi-proyecto-geoespacial/actions/workflows/tests.yml/badge.svg)
+
 # Geospatial API - Nearby Pharmacies
 
 API built with FastAPI + PostgreSQL/PostGIS that allows querying nearby pharmacies for a given location using spatial queries (ST_DWithin, ST_Distance).
