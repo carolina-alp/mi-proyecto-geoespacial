@@ -1,0 +1,53 @@
+name: Run Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_PASSWORD: secreto123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create table and seed data
+        env:
+          PGPASSWORD: secreto123
+        run: |
+          psql -h localhost -U postgres -c "
+          CREATE TABLE pharmacies (
+              id SERIAL PRIMARY KEY,
+              name TEXT,
+              location GEOGRAPHY(Point, 4326)
+          );
+          INSERT INTO pharmacies (name, location) VALUES
+          ('Central Pharmacy', ST_MakePoint(-66.1568, -17.3895)),
+          ('South Pharmacy', ST_MakePoint(-66.1490, -17.4050));
+          "
+
+      - name: Run tests
+        env:
+          POSTGRES_PASSWORD: secreto123
+          DB_HOST: localhost
+        run: pytest
