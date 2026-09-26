@@ -35,7 +35,7 @@ jobs:
         env:
           PGPASSWORD: secreto123
         run: |
-          psql -h localhost -U postgres -c "
+          cat << 'EOF' > seed.sql
           CREATE TABLE pharmacies (
               id SERIAL PRIMARY KEY,
               name TEXT,
@@ -44,7 +44,6 @@ jobs:
           INSERT INTO pharmacies (name, location) VALUES
           ('Central Pharmacy', ST_MakePoint(-66.1568, -17.3895)),
           ('South Pharmacy', ST_MakePoint(-66.1490, -17.4050));
-          "
 
           CREATE TABLE zones (
               id SERIAL PRIMARY KEY,
@@ -54,7 +53,8 @@ jobs:
           INSERT INTO zones (name, boundary) VALUES
           ('Zone North', ST_GeogFromText('POLYGON((-66.17 -17.38, -66.14 -17.38, -66.14 -17.40, -66.17 -17.40, -66.17 -17.38))')),
           ('Zone South', ST_GeogFromText('POLYGON((-66.17 -17.40, -66.14 -17.40, -66.14 -17.42, -66.17 -17.42, -66.17 -17.40))'));
-          "
+          EOF
+          psql -h localhost -U postgres -f seed.sql
 
       - name: Run tests
         env:
